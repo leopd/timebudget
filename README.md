@@ -13,11 +13,11 @@ pip install timebudget
 from timebudget import timebudget
 timebudget.report_atexit()  # Generate report when the program exits
 
-@timebudget
+@timebudget  # Measure how long this function takes
 def possibly_slow():
     ...
 
-@timebudget
+@timebudget  # ... and this function too
 def should_be_fast():
     ...
 ```
