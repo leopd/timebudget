@@ -1,13 +1,17 @@
 # timebudget
 ### A simple tool to see what's slow in your python program
 
-Trying to figure out where the time's going in your python code?  Tired of writing `elapsed = time.time() - start_time`?  Just add a few lines of code to find out.
+Trying to figure out where the time's going in your python code?  Tired of writing `elapsed = time.time() - start_time`?  You can find out with just a few lines of code after you
+
+```
+pip install timebudget
+```
 
 ## The simplest way
 
 ```python
 from timebudget import timebudget
-timebudget.report_atexit()
+timebudget.report_atexit()  # Generate report when the program exits
 
 @timebudget
 def possibly_slow():
@@ -26,7 +30,6 @@ timebudget report...
            should_be_fast:  300.35ms for      2 execs
 ```
 
-See e.g. [demo1.py](demo1.py).
 
 ## More advanced useage
 
@@ -43,7 +46,6 @@ And you can pick when to print the report instead of doing it `atexit`:
 timebudget.report()
 ```
 
-See e.g. [demo2.py](demo2.py).
 
 ## Percent of time in a loop
 
@@ -68,11 +70,12 @@ timebudget report per outer_loop cycle...
            should_be_fast:  13.7%    60.19ms/cyc @     2.0execs/cyc
 ```
 
-See e.g. [demo3.py](demo3.py).
 
 ## Requirements
 
-Needs Python 3.6 or higher.  Because it's 2019, and python 2.7 is on its deathbed.
+Needs Python 3.6 or higher.  Because type annotations are awesome, and it's 2019, and python 2.7 is on its deathbed.
+
+Tests require `pytest`.
 
 ## Inspiration
 
