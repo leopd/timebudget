@@ -9,9 +9,31 @@ pip install timebudget
 
 ## The simplest way
 
+With just two lines of code (one is the import), you can see how long something takes...
+
 ```python
 from timebudget import timebudget
-timebudget.report_atexit()  # Generate report when the program exits
+
+with timebudget("Loading and processing the file"):
+    raw = open(filename,'rt').readlines()
+    lines = [line.rstrip() for line in raw]
+```
+
+will print
+
+```
+Loading and processing the file took 1.453sec
+```
+
+
+## Record times and print a report
+
+To get a report on the total time from functions you care about, just annotate those functions:
+
+```python
+from timebudget import timebudget
+timebudget.set_quiet()  # don't show measurements as they happen
+timebudget.report_at_exit()  # Generate report when the program exits
 
 @timebudget  # Record how long this function takes
 def possibly_slow():
@@ -26,24 +48,24 @@ And now when you run your program, you'll see how much time was spent in each an
 
 ```
 timebudget report...
-            possibly_slow:  901.12ms for      3 execs
-           should_be_fast:   61.35ms for      2 execs
+            possibly_slow:  901.12ms for      3 calls
+           should_be_fast:   61.35ms for      2 calls
 ```
 
-
-## Slightly more advanced useage
-
-You can wrap specific blocks of code to be measured, and give them a name:
+Or instead of calling `report_at_exit()` you can manually call 
 
 ```python
-with timebudget("load-file"):
+timebudget.report(reset=True)  # print out the report now, and reset the statistics
+```
+
+If you don't set `reset=True` then the statistics will accumulate into the next report.
+
+You can also wrap specific blocks of code to be recorded in the report, and optionally override
+the default `set_quiet` choice for any block:
+
+```python
+with timebudget("load-file", quiet=False):
     text = open(filename,'rt').readlines()
-```
-
-And you can pick when to print the report instead of doing it `atexit`:
-
-```python
-timebudget.report()
 ```
 
 
@@ -66,17 +88,17 @@ Then the report looks like:
 
 ```
 timebudget report per outer_loop cycle...
-               outer_loop: 100.0%   440.79ms/cyc @     1.0execs/cyc
-            possibly_slow:  40.9%   180.31ms/cyc @     0.6execs/cyc
-           should_be_fast:  13.7%    60.19ms/cyc @     2.0execs/cyc
+               outer_loop: 100.0%   440.79ms/cyc @     1.0 calls/cyc
+            possibly_slow:  40.9%   180.31ms/cyc @     0.6 calls/cyc
+           should_be_fast:  13.7%    60.19ms/cyc @     2.0 calls/cyc
 ```
 
-Here, the times in milliseconds are the totals (averages per cycle), not the average time per call.  So in the above example, `should_be_fast` is taking about 30ms per call, but being called twice per loop.  Similarly, `possibly_slow` is still about 300ms each time it's called, but it's only getting called on 60% of the cycles on average.
+Here, the times in milliseconds are the totals (averages per cycle), not the average time per call.  So in the above example, `should_be_fast` is taking about 30ms per call, but being called twice per loop.  Similarly, `possibly_slow` is still about 300ms each time it's called, but it's only getting called on 60% of the cycles on average, so on average it's using 41% of the time in `outer_loop` or 180ms.
 
 
 ## Requirements
 
-Needs Python 3.6 or higher.  Because type annotations are awesome, and it's 2019, and python 2.7 is on its deathbed.
+Needs Python 3.6 or higher.  Because f-strings and type annotations are awesome, and it's 2019, and python 2.7 is on its deathbed.
 
 Tests require `pytest`.
 

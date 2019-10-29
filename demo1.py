@@ -1,6 +1,6 @@
 import time
 from timebudget import timebudget
-timebudget.report_atexit()
+timebudget.report_at_exit()
 
 @timebudget
 def possibly_slow():

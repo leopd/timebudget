@@ -4,10 +4,10 @@ long_description = open('README.md', 'rt').read()
 
 setuptools.setup(
      name='timebudget',
-     version='0.6',
+     version='0.7',
      author="Leo Dirac",
      author_email="leo.dirac@gmail.com",
-     description="Simple performance profiling tool for python",
+     description="Stupidly-simple speed profiling tool for python",
      long_description=long_description,
      long_description_content_type="text/markdown",
      url="https://github.com/leopd/timebudget",
