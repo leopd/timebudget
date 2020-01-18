@@ -181,10 +181,10 @@ def set_quiet(quiet:bool=True):
     _default_recorder.quiet_mode = quiet
 
 def reset():
-    _default_recorder.reset()
+    return _default_recorder.reset()
 
 def data():
-    _default_recorder.data()
+    return _default_recorder.data()
 
 
 

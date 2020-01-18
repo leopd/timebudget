@@ -58,3 +58,11 @@ def test_sec_formatting():
     assert "ms" not in out
 
 
+def test_data():
+    timebudget.reset()
+    with timebudget("fast"):
+        time.sleep(0.01)
+    with timebudget("slow"):
+        time.sleep(0.1)
+    d = timebudget.data()
+    assert d['fast']['avg'] < d['slow']['avg']
