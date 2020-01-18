@@ -30,6 +30,8 @@ __all__ = [
     'annotate', 
     'report', 
     'set_quiet',
+    'reset',
+    'data',
 ]
 
 def ms_format(milliseconds:float) -> str:
@@ -83,10 +85,8 @@ class TimeBudgetRecorder():
             self._print(f"{block_name} took {ms_format(elapsed)}")
         return elapsed
 
-    def report(self, percent_of:str=None, reset:bool=False):
-        """Prints a report summarizing all the times recorded by timebudget.
-        If percent_of is specified, then times are shown as a percent of that function.
-        If `reset` is set, then all stats will be cleared after this report.
+    def data(self):
+        """Returns the data used for a report.
         """
         results = []
         for name, cnt in self.elapsed_cnt.items():
@@ -98,6 +98,14 @@ class TimeBudgetRecorder():
                 'avg': total / cnt,
             })
         results = sorted(results, key=lambda r: r['total'], reverse=True)
+        return results
+
+    def report(self, percent_of:str=None, reset:bool=False):
+        """Prints a report summarizing all the times recorded by timebudget.
+        If percent_of is specified, then times are shown as a percent of that function.
+        If `reset` is set, then all stats will be cleared after this report.
+        """
+        results = self.data()
         if percent_of:
             assert percent_of in self.elapsed_cnt, f"Can't generate report for unrecognized block {percent_of}"
             self._print(f"timebudget report per {percent_of} cycle...")
@@ -164,11 +172,20 @@ def set_quiet(quiet:bool=True):
     """
     _default_recorder.quiet_mode = quiet
 
+def reset():
+    _default_recorder.reset()
+
+def data():
+    _default_recorder.data()
+
+
 
 # Create shortcuts for export
 timebudget = annotate_or_with_block
 report = _default_recorder.report
 timebudget.report = report
+timebudget.reset = reset
+timebudget.data = data
 timebudget.__doc__ = __doc__
 timebudget.set_quiet = set_quiet
 timebudget._default_recorder = _default_recorder
