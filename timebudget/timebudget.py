@@ -85,7 +85,7 @@ class TimeBudgetRecorder():
             self._print(f"{block_name} took {ms_format(elapsed)}")
         return elapsed
 
-    def data(self):
+    def _raw_data(self):
         """Returns the data used for a report.
         """
         results = []
@@ -100,12 +100,20 @@ class TimeBudgetRecorder():
         results = sorted(results, key=lambda r: r['total'], reverse=True)
         return results
 
+    def data(self):
+        """Returns data as a dict with key as name
+        """
+        out = {}
+        for rec in self._raw_data():
+            out[rec['name']] = rec
+        return out
+
     def report(self, percent_of:str=None, reset:bool=False):
         """Prints a report summarizing all the times recorded by timebudget.
         If percent_of is specified, then times are shown as a percent of that function.
         If `reset` is set, then all stats will be cleared after this report.
         """
-        results = self.data()
+        results = self._raw_data()
         if percent_of:
             assert percent_of in self.elapsed_cnt, f"Can't generate report for unrecognized block {percent_of}"
             self._print(f"timebudget report per {percent_of} cycle...")
