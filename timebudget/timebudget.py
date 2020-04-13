@@ -18,6 +18,7 @@ By default it prints time measurements immediately. Or:
 timebudget.set_quiet()  # Sets `quiet=True` as global default
 timebudget.report()  # prints a summary of all annotated functions
 """
+__version__ = "0.8.0a"
 import atexit
 from collections import defaultdict
 from functools import wraps
@@ -26,6 +27,7 @@ import time
 from typing import Callable, Optional, Union
 
 __all__ = [
+    '__version__',
     'timebudget', 
     'annotate', 
     'report', 
