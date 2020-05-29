@@ -98,9 +98,19 @@ Here, the times in milliseconds are the totals (averages per cycle), not the ave
 
 ## Requirements
 
-Needs Python 3.6 or higher.  Because f-strings and type annotations are awesome, and it's 2019, and python 2.7 is on its deathbed.
+Needs Python 3.6 or higher.  Other libraries are in `requirements.txt` and can be installed like
 
-Tests require `pytest`.
+```
+pip install -r requirements.txt
+```
+
+## Testing
+
+To run tests:
+
+```
+pytest
+```
 
 ## Inspiration
 
