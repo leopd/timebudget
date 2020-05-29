@@ -71,7 +71,8 @@ with timebudget("load-file", quiet=False):
 
 ## Percent of time in a loop
 
-If you are doing something repeatedly, and want to know the percent of time doing different things, time the loop itself, and pass the name to report:
+If you are doing something repeatedly, and want to know the percent of time doing different things, time the loop itself, and pass the name to report.  That is, add a timebudget annotation or wrapper onto the thing which is happening repeatedly.  Each time this method or code-block is entered will now be considered one "cycle" and your report will tell you what fraction of time things take within this cycle.
+
 
 ```python
 @timebudget
@@ -80,6 +81,9 @@ def outer_loop():
         possibly_slow()
     should_be_fast()
     should_be_fast()
+
+for _ in range(NUM_CYCLES):
+    outer_loop()
     
 timebudget.report('outer_loop')
 ```
@@ -98,9 +102,19 @@ Here, the times in milliseconds are the totals (averages per cycle), not the ave
 
 ## Requirements
 
-Needs Python 3.6 or higher.  Because f-strings and type annotations are awesome, and it's 2019, and python 2.7 is on its deathbed.
+Needs Python 3.6 or higher.  Other libraries are in `requirements.txt` and can be installed like
 
-Tests require `pytest`.
+```
+pip install -r requirements.txt  # only needed for developing timebudget.
+```
+
+## Testing
+
+To run tests:
+
+```
+pytest
+```
 
 ## Inspiration
 

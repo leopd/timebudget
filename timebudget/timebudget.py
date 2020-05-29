@@ -25,6 +25,7 @@ from functools import wraps
 import sys
 import time
 from typing import Callable, Optional, Union
+import warnings
 
 __all__ = [
     '__version__',
@@ -70,7 +71,10 @@ class TimeBudgetRecorder():
         self.out_stream.flush()
 
     def start(self, block_name:str):
-        assert block_name not in self.start_times, f"timebudget.start({block_name}) without end"
+        if block_name in self.start_times:
+            # End should clear out the record, so something odd has happened here.
+            # try/finally should prevent this, but sometimes it doesn't.
+            warnings.warn(f"timebudget is confused: timebudget.start({block_name}) without end")
         self.start_times[block_name] = time.time()
 
     def end(self, block_name:str, quiet:Optional[bool]=None) -> float:
@@ -78,7 +82,9 @@ class TimeBudgetRecorder():
         """
         if quiet is None:
             quiet = self.quiet_mode
-        assert block_name in self.start_times, f"timebudget.end({block_name}) without start"
+        if block_name not in self.start_times:
+            warnings.warn(f"timebudget is confused: timebudget.end({block_name}) without start")
+            return float('NaN')
         elapsed = 1000*(time.time() - self.start_times[block_name])
         self.elapsed_total[block_name] += elapsed
         self.elapsed_cnt[block_name] += 1
