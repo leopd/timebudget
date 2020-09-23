@@ -21,6 +21,7 @@ timebudget.report()  # prints a summary of all annotated functions
 import atexit
 from collections import defaultdict
 from functools import wraps
+import math
 import sys
 import time
 from typing import Callable, Optional, Union
@@ -109,15 +110,29 @@ class TimeBudgetRecorder():
             self._print(f"timebudget report per {percent_of} cycle...")
             total_elapsed = self.elapsed_total[percent_of]
             total_cnt = self.elapsed_cnt[percent_of]
+            max_len_name = max([len(res['name']) for res in results])
+            max_len_avg = max([math.floor(math.log10(res['total'] / total_cnt)) for res in results]) + 5.2
+            max_len_pct = max([math.floor(math.log10(100 * res['total'] / total_elapsed)) for res in results]) + 4.1
+            max_len_avg_cnt = max([math.floor(math.log10(res['cnt'] / total_cnt)) for res in results]) + 3.1
             for res in results:
                 avg = res['total'] / total_cnt
                 pct = 100.0 * res['total'] / total_elapsed
                 avg_cnt = res['cnt'] / total_cnt
-                self._print(f"{res['name']:>25s}:{pct: 6.1f}% {avg: 8.2f}ms/cyc @{avg_cnt: 8.1f} calls/cyc")
+                string = "{:>{width}}".format(res['name'], width = max_len_name)
+                string += ":{:{width}f}%".format(pct, width = max_len_pct)
+                string += " {:{width}f}ms/cyc".format(avg, width = max_len_avg)
+                string += " @ {:{width}f} calls/cyc".format(avg_cnt, width = max_len_avg_cnt)
+                self._print(string)
         else:
             self._print("timebudget report...")
+            max_len_name = max([len(res['name']) for res in results])
+            max_len_avg = max(max([math.floor(math.log10(res['avg'])) for res in results]), 0) + 5.2
+            max_len_cnt = max([math.floor(math.log10(res['cnt'])) for res in results])
             for res in results:
-                self._print(f"{res['name']:>25}:{res['avg']: 8.2f}ms for {res['cnt']: 6d} calls")
+                string = "{:>{width}}".format(res['name'], width = max_len_name)
+                string += ":{:{width}f}ms".format(res['avg'], width = max_len_avg)
+                string += " for {:{width}} calls".format(res['cnt'], width = max_len_cnt)
+                self._print(string)
         if reset:
             self.reset()
 
