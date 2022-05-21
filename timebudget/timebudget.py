@@ -25,6 +25,7 @@ import sys
 import time
 from typing import Callable, Optional, Union
 import warnings
+from threading import get_ident
 
 __all__ = [
     'timebudget', 
@@ -67,24 +68,24 @@ class TimeBudgetRecorder():
         self.out_stream.flush()
 
     def start(self, block_name:str):
-        if block_name in self.start_times:
+        if (block_name, get_ident()) in self.start_times:
             # End should clear out the record, so something odd has happened here.
             # try/finally should prevent this, but sometimes it doesn't.
             warnings.warn(f"timebudget is confused: timebudget.start({block_name}) without end")
-        self.start_times[block_name] = time.time()
+        self.start_times[(block_name, get_ident())] = time.time()
 
     def end(self, block_name:str, quiet:Optional[bool]=None) -> float:
         """Returns number of ms spent in this block this time.
         """
         if quiet is None:
             quiet = self.quiet_mode
-        if block_name not in self.start_times:
+        if (block_name, get_ident()) not in self.start_times:
             warnings.warn(f"timebudget is confused: timebudget.end({block_name}) without start")
             return float('NaN')
-        elapsed = 1000*(time.time() - self.start_times[block_name])
+        elapsed = 1000*(time.time() - self.start_times[(block_name, get_ident())])
         self.elapsed_total[block_name] += elapsed
         self.elapsed_cnt[block_name] += 1
-        del self.start_times[block_name]
+        del self.start_times[(block_name, get_ident())]
         if not quiet:
             self._print(f"{block_name} took {ms_format(elapsed)}")
         return elapsed
